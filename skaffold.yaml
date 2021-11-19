@@ -1,5 +1,97 @@
+#---
+#apiVersion: skaffold/v2beta25
+#kind: Config
+#metadata:
+#  name: etcd
+#deploy:
+#  kustomize:
+#    paths:
+#    - example/gardener-local/base
+---
 apiVersion: skaffold/v2beta25
 kind: Config
+metadata:
+  name: controlplane
+#requires:
+#- configs: ["etcd"]
+build:
+  tagPolicy:
+    envTemplate:
+      template: "{{.VERSION}}"
+#    customTemplate:
+#      template: "{{.version}}-{{.sha}}"
+#      components:
+#      - name: version
+#        envTemplate:
+#          template: "{{.Env.VERSION}}"
+#      - name: sha
+#        gitCommit:
+#          variant: AbbrevTreeSha
+  local:
+    useBuildkit: true
+    concurrency: 1
+  artifacts:
+  - image: eu.gcr.io/gardener-project/gardener/apiserver
+    docker:
+      dockerfile: Dockerfile.local
+      target: apiserver
+      buildArgs:
+        VERSION: "{{.VERSION}}"
+  - image: eu.gcr.io/gardener-project/gardener/controller-manager
+    docker:
+      dockerfile: Dockerfile.local
+      target: controller-manager
+      buildArgs:
+        VERSION: "{{.VERSION}}"
+  - image: eu.gcr.io/gardener-project/gardener/scheduler
+    docker:
+      dockerfile: Dockerfile.local
+      target: scheduler
+      buildArgs:
+        VERSION: "{{.VERSION}}"
+  - image: eu.gcr.io/gardener-project/gardener/resource-manager
+    docker:
+      dockerfile: Dockerfile.local
+      target: resource-manager
+      buildArgs:
+        VERSION: "{{.VERSION}}"
+  - image: eu.gcr.io/gardener-project/gardener/seed-admission-controller
+    docker:
+      dockerfile: Dockerfile.local
+      target: seed-admission-controller
+      buildArgs:
+        VERSION: "{{.VERSION}}"
+deploy:
+  helm:
+    releases:
+    - name: gardener-controlplane
+      chartPath: charts/gardener/controlplane
+      namespace: garden
+      createNamespace: true
+      wait: true
+      artifactOverrides:
+        global:
+          apiserver:
+            image: eu.gcr.io/gardener-project/gardener/apiserver
+          controller:
+            image: eu.gcr.io/gardener-project/gardener/controller-manager
+          scheduler:
+            image: eu.gcr.io/gardener-project/gardener/scheduler
+      imageStrategy:
+        helm: {}
+      valuesFiles:
+      - charts/gardener/controlplane/values-local.yaml
+#      overrides:
+#        global:
+#          apiserver:
+#            clusterIdentity: gardener-local
+---
+apiVersion: skaffold/v2beta25
+kind: Config
+metadata:
+  name: provider-local
+requires:
+- configs: ["local-env"]
 build:
   artifacts:
   - image: eu.gcr.io/gardener-project/gardener/extensions/provider-local

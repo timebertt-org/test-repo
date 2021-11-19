@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd
+  namespace: garden
+  labels:
+    app: etcd
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: etcd
+  ports:
+  - port: 2379
+    targetPort: 2379

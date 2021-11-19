@@ -250,6 +250,16 @@ kind-up:
 kind-down:
 	kind delete cluster --name gardener-local
 
+gardener-up: $(SKAFFOLD) $(HELM)
+	@# it's better to use kustomize separately from skaffold for applying StatefulSets
+	@# see: https://github.com/GoogleContainerTools/skaffold/issues/6416
+	kubectl apply -k example/gardener-local/base
+	VERSION=$(EFFECTIVE_VERSION) $(SKAFFOLD) run --tail -m controlplane
+
+gardener-down: $(SKAFFOLD) $(HELM)
+	kubectl delete -k example/gardener-local/base
+	$(SKAFFOLD) delete -m controlplane
+
 register-local-env:
 	kubectl apply -k example/provider-local/overlays/local
 
@@ -262,7 +272,3 @@ tear-down-local-env:
 
 test-e2e-local:
 	./hack/test-e2e-local.sh
-
-#local-dev-setup:
-#	KUBECONFIG=example/provider-local/base/kubeconfig ./hack/local-development/dev-setup
-
