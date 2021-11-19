@@ -29,8 +29,6 @@ go test -mod=vendor -timeout=10m ./test/system/shoot_creation \
   -secret-binding=local \
   -provider-type=local \
   -networking-type=local \
-  -worker-minimum=1 \
-  -worker-maximum=1 \
   -workers-config-filepath=<(cat <<EOF
 - name: local
   machine:
