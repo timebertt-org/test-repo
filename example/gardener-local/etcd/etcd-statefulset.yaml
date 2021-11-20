@@ -21,17 +21,28 @@ spec:
         name: etcd
         command:
         - etcd
+        - --name=etcd
         - --listen-client-urls=http://0.0.0.0:2379
-        - --advertise-client-urls=http://etcd-0.etcd:2379
+        - --advertise-client-urls=http://etcd-client.garden.svc:2379
+        - --listen-peer-urls=http://0.0.0.0:2380
+        - --initial-advertise-peer-urls=http://etcd-0.etcd.garden.svc:2380
+        - --initial-cluster=etcd=http://etcd-0.etcd.garden.svc:2380
+        - --initial-cluster-state=new
+        - --initial-cluster-token=new
+        - --data-dir=/etcd-data
 #        - --trusted-ca-file=/tls/client-ca.crt
 #        - --key-file=/tls/tls.key
 #        - --cert-file=/tls/tls.crt
-        - --data-dir=/etcd-data
         volumeMounts:
         - name: tls
           mountPath: /tls
         - name: data
           mountPath: /etcd-data
+        ports:
+        - name: client
+          containerPort: 2379
+        - name: discovery
+          containerPort: 2380
       volumes:
       - name: tls
         secret:

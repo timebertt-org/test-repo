@@ -1,0 +1,17 @@
+global:
+  gardenlet:
+    config:
+      controllers:
+        shoot:
+          reconcileInMaintenanceOnly: true
+      featureGates:
+        Logging: true
+        HVPA: true
+        HVPAForShootedSeed: true
+        ManagedIstio: true
+        APIServerSNI: true
+        CachedRuntimeClients: true
+        SeedKubeScheduler: false
+        ReversedVPN: true
+        UseDNSRecords: true
+        DenyInvalidExtensionResources: true

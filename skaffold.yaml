@@ -1,19 +1,20 @@
-#---
-#apiVersion: skaffold/v2beta25
-#kind: Config
-#metadata:
-#  name: etcd
-#deploy:
-#  kustomize:
-#    paths:
-#    - example/gardener-local/base
+---
+apiVersion: skaffold/v2beta25
+kind: Config
+metadata:
+  name: etcd
+deploy:
+  kubectl:
+    manifests:
+    - example/00-namespace-garden.yaml
+    - example/gardener-local/etcd/*.yaml
 ---
 apiVersion: skaffold/v2beta25
 kind: Config
 metadata:
   name: controlplane
-#requires:
-#- configs: ["etcd"]
+requires:
+- configs: ["etcd"]
 build:
   tagPolicy:
     envTemplate:
@@ -49,6 +50,55 @@ build:
       target: scheduler
       buildArgs:
         VERSION: "{{.VERSION}}"
+deploy:
+  helm:
+    releases:
+    - name: gardener-controlplane
+      chartPath: charts/gardener/controlplane
+      namespace: garden
+      createNamespace: true
+      wait: true
+      artifactOverrides:
+        global:
+          gardenlet:
+            image: eu.gcr.io/gardener-project/gardener/gardenlet
+        # TODO: somehow inject imagevector overwrite for grm, gsac
+      imageStrategy:
+        helm: {}
+      valuesFiles:
+      - charts/gardener/gardenlet/values-local.yaml
+---
+apiVersion: skaffold/v2beta25
+kind: Config
+metadata:
+  name: local-env
+requires:
+- configs: ["controlplane"]
+deploy:
+  kustomize:
+    paths:
+    - example/provider-local/overlays/skaffold
+---
+apiVersion: skaffold/v2beta25
+kind: Config
+metadata:
+  name: gardenlet
+requires:
+- configs: ["local-env"]
+build:
+  tagPolicy:
+    envTemplate:
+      template: "{{.VERSION}}"
+  local:
+    useBuildkit: true
+    concurrency: 1
+  artifacts:
+  - image: eu.gcr.io/gardener-project/gardener/gardenlet
+    docker:
+      dockerfile: Dockerfile.local
+      target: gardenlet
+      buildArgs:
+        VERSION: "{{.VERSION}}"
   - image: eu.gcr.io/gardener-project/gardener/resource-manager
     docker:
       dockerfile: Dockerfile.local
@@ -80,18 +130,14 @@ deploy:
       imageStrategy:
         helm: {}
       valuesFiles:
-      - charts/gardener/controlplane/values-local.yaml
-#      overrides:
-#        global:
-#          apiserver:
-#            clusterIdentity: gardener-local
+      - charts/gardener/gardenlet/values-local.yaml
 ---
 apiVersion: skaffold/v2beta25
 kind: Config
 metadata:
   name: provider-local
 requires:
-- configs: ["local-env"]
+- configs: ["gardenlet"]
 build:
   artifacts:
   - image: eu.gcr.io/gardener-project/gardener/extensions/provider-local
