@@ -32,7 +32,7 @@ build:
 #          variant: AbbrevTreeSha
   local:
     useBuildkit: true
-    concurrency: 1
+    concurrency: 3
   artifacts:
   - image: eu.gcr.io/gardener-project/gardener/apiserver
     docker:
@@ -96,7 +96,7 @@ build:
       template: "{{.VERSION}}"
   local:
     useBuildkit: true
-    concurrency: 1
+    concurrency: 3
   artifacts:
   - image: eu.gcr.io/gardener-project/gardener/gardenlet
     docker:
@@ -117,6 +117,9 @@ build:
       buildArgs:
         VERSION: "{{.VERSION}}"
 deploy:
+  kubectl:
+    manifests:
+    - example/gardener-local/gardenlet/secret-bootstrap-token.yaml
   helm:
     releases:
     - name: gardener-gardenlet
