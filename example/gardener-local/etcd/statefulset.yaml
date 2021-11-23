@@ -2,9 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: etcd
-  namespace: garden
-  labels:
-    app: etcd
 spec:
   replicas: 1
   serviceName: etcd

@@ -1,10 +1,8 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: etcd
-  namespace: garden
-  labels:
-    app: etcd
 spec:
   type: ClusterIP
   clusterIP: None
@@ -23,9 +21,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: etcd-client
-  namespace: garden
-  labels:
-    app: etcd
 spec:
   type: ClusterIP
   selector:
