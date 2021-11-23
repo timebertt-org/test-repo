@@ -62,13 +62,16 @@ deploy:
       wait: true
       artifactOverrides:
         global:
-          gardenlet:
-            image: eu.gcr.io/gardener-project/gardener/gardenlet
-        # TODO: somehow inject imagevector overwrite for grm, gsac
+          apiserver:
+            image: eu.gcr.io/gardener-project/gardener/apiserver
+          controller:
+            image: eu.gcr.io/gardener-project/gardener/controller-manager
+          scheduler:
+            image: eu.gcr.io/gardener-project/gardener/scheduler
       imageStrategy:
         helm: {}
       valuesFiles:
-      - charts/gardener/gardenlet/values-local.yaml
+      - charts/gardener/controlplane/values-local.yaml
 ---
 apiVersion: skaffold/v2beta25
 kind: Config
@@ -116,19 +119,16 @@ build:
 deploy:
   helm:
     releases:
-    - name: gardener-controlplane
-      chartPath: charts/gardener/controlplane
+    - name: gardener-gardenlet
+      chartPath: charts/gardener/gardenlet
       namespace: garden
       createNamespace: true
       wait: true
       artifactOverrides:
         global:
-          apiserver:
-            image: eu.gcr.io/gardener-project/gardener/apiserver
-          controller:
-            image: eu.gcr.io/gardener-project/gardener/controller-manager
-          scheduler:
-            image: eu.gcr.io/gardener-project/gardener/scheduler
+          gardenlet:
+            image: eu.gcr.io/gardener-project/gardener/gardenlet
+        # TODO: somehow inject imagevector overwrite for grm, gsac
       imageStrategy:
         helm: {}
       valuesFiles:
@@ -144,11 +144,11 @@ build:
   artifacts:
   - image: eu.gcr.io/gardener-project/gardener/extensions/provider-local
     docker:
-      dockerfile: Dockerfile
-      target: gardener-extension-provider-local
+      dockerfile: Dockerfile.local
+      target: extension-provider-local
     sync:
       infer:
-      - charts/gardener/provider-local
+      - charts/gardener/provider-local/internal
   local:
     useBuildkit: true
 deploy:

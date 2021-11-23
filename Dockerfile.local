@@ -131,6 +131,7 @@ FROM builder-base AS builder-gardenlet
 COPY charts/images.go charts/images.yaml charts/doc.go charts/
 COPY cmd cmd
 COPY pkg pkg
+COPY third_party third_party
 
 COPY go.mod go.sum ./
 
@@ -141,6 +142,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 
 FROM base AS gardenlet
 
+COPY charts /charts
 COPY --from=builder-gardenlet /gardenlet /gardenlet
 ENTRYPOINT ["/gardenlet"]
 
@@ -162,5 +164,6 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 
 FROM base AS extension-provider-local
 
+COPY charts/gardener/provider-local/internal /charts/gardener/provider-local/internal
 COPY --from=builder-extension-provider-local /gardener-extension-provider-local /gardener-extension-provider-local
 ENTRYPOINT ["/gardener-extension-provider-local"]
