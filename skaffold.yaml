@@ -131,7 +131,27 @@ deploy:
         global:
           gardenlet:
             image: eu.gcr.io/gardener-project/gardener/gardenlet
-        # TODO: somehow inject imagevector overwrite for grm, gsac
+          # dummy artifact overrides to make skaffold load images into cluster
+          resource-manager:
+            image: eu.gcr.io/gardener-project/gardener/resource-manager
+          seed-admission-controller:
+            image: eu.gcr.io/gardener-project/gardener/seed-admission-controller
+      setValueTemplates:
+        global:
+          gardenlet:
+            # on a local cluster, skaffold uses a local immutable tag for artifacts,
+            # overwrite our image vector to use the image that was just built
+            # see https://skaffold.dev/docs/pipeline-stages/taggers/#how-tagging-works
+            imageVectorOverwrite: |
+              images:
+              - name: gardener-resource-manager
+                sourceRepository: github.com/gardener/gardener
+                repository: eu.gcr.io/gardener-project/gardener/resource-manager
+                tag: "{{.IMAGE_TAG5}}"
+              - name: gardener-seed-admission-controller
+                sourceRepository: github.com/gardener/gardener
+                repository: eu.gcr.io/gardener-project/gardener/seed-admission-controller
+                tag: "{{.IMAGE_TAG6}}"
       imageStrategy:
         helm: {}
       valuesFiles:
