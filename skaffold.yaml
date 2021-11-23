@@ -80,6 +80,9 @@ metadata:
 requires:
 - configs: ["controlplane"]
 deploy:
+  kubectl:
+    manifests:
+    - example/gardener-local/gardenlet/secret-bootstrap-token.yaml
   kustomize:
     paths:
     - example/provider-local/overlays/skaffold
@@ -117,9 +120,6 @@ build:
       buildArgs:
         VERSION: "{{.VERSION}}"
 deploy:
-  kubectl:
-    manifests:
-    - example/gardener-local/gardenlet/secret-bootstrap-token.yaml
   helm:
     releases:
     - name: gardener-gardenlet

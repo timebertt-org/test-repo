@@ -253,10 +253,10 @@ kind-down:
 # workaround for https://github.com/GoogleContainerTools/skaffold/issues/6416
 export SKAFFOLD_LABEL := skaffold.dev/run-id=gardener-local
 gardener-up: $(SKAFFOLD) $(HELM)
-	VERSION=$(EFFECTIVE_VERSION) $(SKAFFOLD) run --tail -m gardenlet
+	VERSION=$(EFFECTIVE_VERSION) $(SKAFFOLD) run --tail -m provider-local
 
 gardener-down: $(SKAFFOLD) $(HELM)
-	$(SKAFFOLD) delete -m gardenlet
+	$(SKAFFOLD) delete -m provider-local
 
 register-local-env:
 	kubectl apply -k example/provider-local/overlays/local

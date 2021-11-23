@@ -150,10 +150,12 @@ ENTRYPOINT ["/gardenlet"]
 FROM builder-base AS builder-extension-provider-local
 
 # manually copy the packages we need to keep the build context slim
-COPY charts/images.go charts/images.yaml charts/
+COPY charts/images.go charts/images.yaml charts/doc.go charts/
 COPY cmd cmd
 COPY extensions extensions
 COPY pkg pkg
+# don't ask
+COPY third_party third_party
 
 COPY go.mod go.sum ./
 
