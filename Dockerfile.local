@@ -37,6 +37,7 @@ COPY plugin plugin
 COPY go.mod go.sum ./
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
     go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" \
     -ldflags="$(cat /tmp/build-flags)" \
     -o /gardener-apiserver ./cmd/gardener-apiserver
@@ -57,6 +58,7 @@ COPY pkg pkg
 COPY go.mod go.sum ./
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
     go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" \
     -ldflags="$(cat /tmp/build-flags)" \
     -o /gardener-controller-manager ./cmd/gardener-controller-manager
@@ -76,6 +78,7 @@ COPY pkg pkg
 COPY go.mod go.sum ./
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
     go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" \
     -ldflags="$(cat /tmp/build-flags)" \
     -o /gardener-scheduler ./cmd/gardener-scheduler
@@ -95,6 +98,7 @@ COPY pkg pkg
 COPY go.mod go.sum ./
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
     go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" \
     -ldflags="$(cat /tmp/build-flags)" \
     -o /gardener-resource-manager ./cmd/gardener-resource-manager
@@ -115,6 +119,7 @@ COPY pkg pkg
 COPY go.mod go.sum ./
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
     go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" \
     -ldflags="$(cat /tmp/build-flags)" \
     -o /gardener-seed-admission-controller ./cmd/gardener-seed-admission-controller
@@ -136,6 +141,7 @@ COPY third_party third_party
 COPY go.mod go.sum ./
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
     go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" \
     -ldflags="$(cat /tmp/build-flags)" \
     -o /gardenlet ./cmd/gardenlet
@@ -160,6 +166,7 @@ COPY third_party third_party
 COPY go.mod go.sum ./
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
     go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" \
     -ldflags="$(cat /tmp/build-flags)" \
     -o /gardener-extension-provider-local ./cmd/gardener-extension-provider-local
