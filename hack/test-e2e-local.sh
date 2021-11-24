@@ -11,7 +11,6 @@ function shoot_deletion {
     -shoot-name=e2e-local
 
   if [ $create_failed = yes ] ; then
-    # TODO: actually we probably don't even need to try deleting the shoot if creation failed
     exit 1
   fi
 }

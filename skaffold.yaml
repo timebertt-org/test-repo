@@ -18,18 +18,6 @@ metadata:
 requires:
 - configs: ["etcd"]
 build:
-  tagPolicy:
-    envTemplate:
-      template: "{{.VERSION}}"
-#    customTemplate:
-#      template: "{{.version}}-{{.sha}}"
-#      components:
-#      - name: version
-#        envTemplate:
-#          template: "{{.Env.VERSION}}"
-#      - name: sha
-#        gitCommit:
-#          variant: AbbrevTreeSha
   local:
     useBuildkit: true
     concurrency: 3
@@ -94,9 +82,6 @@ metadata:
 requires:
 - configs: ["local-env"]
 build:
-  tagPolicy:
-    envTemplate:
-      template: "{{.VERSION}}"
   local:
     useBuildkit: true
     concurrency: 3
